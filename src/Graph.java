@@ -3,22 +3,13 @@ import java.util.*;
 public class Graph {
     private Map<String, Vertex> map = new HashMap<>();
 
-    public Vertex getOrCreate(String name) {
-        Vertex new_vertex = map.get(name);
-        if (new_vertex == null) {
-            new_vertex = new Vertex(name);
-            map.put(name, new_vertex);
-        }
-        return new_vertex;
-    }
-
     public void addNode(String name) {
-        getOrCreate(name);
+        map.put(name, new Vertex(name));
     }
 
     public void addEdge(String from, String to) {
-        Vertex from_vertex = getOrCreate(from);
-        Vertex to_vertex = getOrCreate(to);
+        Vertex from_vertex = map.get(from);
+        Vertex to_vertex = map.get(to);
         from_vertex.adj.add(to_vertex);
         to_vertex.indegree++;
     }
