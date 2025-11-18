@@ -20,59 +20,70 @@ public class Ex2 {
 
     // Read in a graph from a file and print out the nodes and edges
     public static void readGraph(File selectedFile) throws IOException, FileFormatException {
+		Graph graph = new Graph();
+		BufferedReader r = new BufferedReader(new FileReader(selectedFile));
+		String line=null;
 	
-	BufferedReader r = new BufferedReader(new FileReader(selectedFile));
-	String line=null;
-	
-	try {
-	    // Skip over comment lines in the beginning of the file 
-	    while ( !(line = r.readLine()).equalsIgnoreCase("[Vertex]") ) {} ;
-	    System.out.println(); System.out.println("Nodes:");
-	    
-	    // Read all vertex definitions
-	    while (!(line=r.readLine()).equalsIgnoreCase("[Edges]") ) {
-		if (line.trim().length() > 0) {  // Skip empty lines
-		    try {
-			// Split the line into a comma separated list V1,V2 etc
-			String[] nodeNames=line.split(",");
-			
-			for (String n:nodeNames) {
-			    System.out.println(n.trim() );   // Trim and print the node name
-			    // Here you should create a node in the graph
-			}
-			
-		    } catch (Exception e) {   // Something wrong in the graph file
-			r.close();
-			throw new FileFormatException("Error in vertex definitions"); 
-		    }
-		}
-	    }
-	    
-	} catch (NullPointerException e1) {  // The input file has wrong format
-	    throw new FileFormatException(" No [Vertex] or [Edges] section found in the file " + selectedFile.getName());
-	}
-
-	System.out.println(); System.out.println("Edges:");
-	// Read all edge definitions
-	while ( (line=r.readLine()) !=null ) {
-	    if (line.trim().length() > 0) {  // Skip empty lines
 		try {
-		    String[] edges=line.split(",");           // Edges are comma separated pairs e1:e2
-		    
-		    for (String e:edges) {       // For all edges
-			String[] edgePair = e.trim().split(":"); //Split edge components v1:v2
-			System.out.println (edgePair[0].trim() + " " + edgePair[1].trim() );
-			// Here you should create an edge in the graph
-		    }
-		    
-		} catch (Exception e) { //Something is wrong, Edges should be in format v1:v2
-		    r.close();
-		    throw new FileFormatException("Error in edge definition");
+			// Skip over comment lines in the beginning of the file
+			while ( !(line = r.readLine()).equalsIgnoreCase("[Vertex]") ) {} ;
+			System.out.println(); System.out.println("Nodes:");
+
+			// Read all vertex definitions
+			while (!(line=r.readLine()).equalsIgnoreCase("[Edges]") ) {
+			if (line.trim().length() > 0) {  // Skip empty lines
+				try {
+				// Split the line into a comma separated list V1,V2 etc
+				String[] nodeNames=line.split(",");
+
+				for (String n:nodeNames) {
+					String name = n.trim();
+					System.out.println(name);   // Trim and print the node name
+					// Here you should create a node in the graph
+					graph.addNode(name);
+				}
+
+				} catch (Exception e) {   // Something wrong in the graph file
+				r.close();
+				throw new FileFormatException("Error in vertex definitions");
+				}
+			}
+			}
+
+		} catch (NullPointerException e1) {  // The input file has wrong format
+			throw new FileFormatException(" No [Vertex] or [Edges] section found in the file " + selectedFile.getName());
 		}
-	    }
+
+		System.out.println(); System.out.println("Edges:");
+		// Read all edge definitions
+		while ( (line=r.readLine()) !=null ) {
+			if (line.trim().length() > 0) {  // Skip empty lines
+			try {
+				String[] edges=line.split(",");           // Edges are comma separated pairs e1:e2
+
+				for (String e:edges) {       // For all edges
+					String[] edgePair = e.trim().split(":"); //Split edge components v1:v2
+					String from = edgePair[0].trim();
+					String to = edgePair[1].trim();
+					System.out.println (from + " " + to );
+					// Here you should create an edge in the graph
+					graph.addEdge(from, to);
+				}
+
+			} catch (Exception e) { //Something is wrong, Edges should be in format v1:v2
+				r.close();
+				throw new FileFormatException("Error in edge definition");
+			}
+			}
+		}
+		r.close();  // Close the reader
+		try {
+			graph.topsort();
+		} catch (CycleFound e) {
+			System.out.println(e.getMessage());
+		}
+
 	}
-	r.close();  // Close the reader	
-    }
 
 }
 
